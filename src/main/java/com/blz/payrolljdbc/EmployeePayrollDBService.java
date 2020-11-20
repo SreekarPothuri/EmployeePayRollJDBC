@@ -93,11 +93,11 @@ public class EmployeePayrollDBService {
 	}
 
 	public int updateEmployeeData(String name, double salary) throws EmployeePayrollException {
-		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
+		return this.updateEmployeeDataUsingStatement(name, salary);
 	}
 
 	private int updateEmployeeDataUsingStatement(String name, double salary) {
-		String sql = String.format("update empolyee_payroll set salary = %.2f where name = '%s'", salary, name);
+		String sql = String.format("update employee_payroll set salary = %.2f where name = '%s'", salary, name);
 		try (Connection connection = this.getConnection();) {
 			Statement statement = connection.createStatement();
 			return statement.executeUpdate(sql);
@@ -105,19 +105,5 @@ public class EmployeePayrollDBService {
 			e.printStackTrace();
 		}
 		return 0;
-	}
-
-	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) throws EmployeePayrollException {
-		try (Connection connection = this.getConnection();) {
-			String sql = "update employee_payroll set salary = ? where name = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setDouble(1, salary);
-			preparedStatement.setString(2, name);
-			int status = preparedStatement.executeUpdate();
-			return status;
-		} catch (SQLException e) {
-			throw new EmployeePayrollException(e.getMessage(),
-					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
-		}
 	}
 }

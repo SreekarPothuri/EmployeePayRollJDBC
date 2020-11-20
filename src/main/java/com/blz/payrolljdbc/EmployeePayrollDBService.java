@@ -1,6 +1,7 @@
 package com.blz.payrolljdbc;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,16 +38,7 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayRollData> readData() throws EmployeePayrollException {
 		String sql = "SELECT * FROM employee_payroll; ";
-		List<EmployeePayRollData> employeePayrollList = new ArrayList<>();
-		try (Connection connection = this.getConnection();) {
-			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-			employeePayrollList = this.getEmployeePayrollData(resultSet);
-		} catch (SQLException e) {
-			throw new EmployeePayrollException(e.getMessage(),
-					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
-		}
-		return employeePayrollList;
+		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 
 	public List<EmployeePayRollData> getEmployeePayrollData(String name) throws EmployeePayrollException {
@@ -74,6 +66,26 @@ public class EmployeePayrollDBService {
 				LocalDate startDate = resultSet.getDate("start").toLocalDate();
 				employeePayrollList.add(new EmployeePayRollData(id, name, salary, startDate));
 			}
+		} catch (SQLException e) {
+			throw new EmployeePayrollException(e.getMessage(),
+					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
+		}
+		return employeePayrollList;
+	}
+
+	public List<EmployeePayRollData> getEmployeeForDateRange(LocalDate startDate, LocalDate endDate)
+			throws EmployeePayrollException {
+		String sql = String.format("SELECT * FROM employee_payroll WHERE start BETWEEN '%s' AND '%s'",
+				Date.valueOf(startDate), Date.valueOf(endDate));
+		return this.getEmployeePayrollDataUsingDB(sql);
+	}
+
+	private List<EmployeePayRollData> getEmployeePayrollDataUsingDB(String sql) throws EmployeePayrollException {
+		List<EmployeePayRollData> employeePayrollList = new ArrayList<>();
+		try (Connection connection = this.getConnection();) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			employeePayrollList = this.getEmployeePayrollData(resultSet);
 		} catch (SQLException e) {
 			throw new EmployeePayrollException(e.getMessage(),
 					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);

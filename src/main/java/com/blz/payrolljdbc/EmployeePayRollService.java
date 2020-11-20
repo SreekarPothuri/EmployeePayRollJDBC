@@ -2,6 +2,7 @@ package com.blz.payrolljdbc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayRollService {
 
@@ -31,6 +32,30 @@ public class EmployeePayRollService {
 			LocalDate endDate) throws EmployeePayrollException {
 		if (ioService.equals(IOService.DB_IO))
 			return employeePayrollDBService.getEmployeeForDateRange(startDate, endDate);
+		return null;
+	}
+
+	public Map<String, Double> readAverageSalaryByGender(IOService ioService) throws EmployeePayrollException {
+		if (ioService.equals(IOService.DB_IO))
+			return employeePayrollDBService.getAverageSalaryByGender();
+		return null;
+	}
+
+	public Map<String, Double> readSumOfSalaryByGender(IOService ioService) throws EmployeePayrollException {
+		if (ioService.equals(IOService.DB_IO))
+			return employeePayrollDBService.getSumOfSalaryByGender();
+		return null;
+	}
+
+	public Map<String, Double> readMinOfSalaryByGender(IOService ioService) throws EmployeePayrollException {
+		if (ioService.equals(IOService.DB_IO))
+			return employeePayrollDBService.getMinOfSalaryByGender();
+		return null;
+	}
+
+	public Map<String, Double> readMaxOfSalaryByGender(IOService ioService) throws EmployeePayrollException{
+		if (ioService.equals(IOService.DB_IO))
+			return employeePayrollDBService.getMaxOfSalaryByGender();
 		return null;
 	}
 

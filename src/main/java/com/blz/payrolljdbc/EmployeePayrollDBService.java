@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollDBService {
 
@@ -75,7 +77,7 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayRollData> getEmployeeForDateRange(LocalDate startDate, LocalDate endDate)
 			throws EmployeePayrollException {
-		String sql = String.format("SELECT * FROM employee_payroll WHERE start BETWEEN '%s' AND '%s'",
+		String sql = String.format("SELECT * FROM employee_payroll WHERE start BETWEEN '%s' AND '%s';",
 				Date.valueOf(startDate), Date.valueOf(endDate));
 		return this.getEmployeePayrollDataUsingDB(sql);
 	}
@@ -91,6 +93,43 @@ public class EmployeePayrollDBService {
 					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
 		}
 		return employeePayrollList;
+	}
+
+	private Map<String, Double> getSalaryByGender(String sql) throws EmployeePayrollException{
+		Map<String, Double> genderToSalaryMap = new HashMap<>();
+		try (Connection connection = this.getConnection();) {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				double salary = resultSet.getDouble("salary");
+				genderToSalaryMap.put(gender, salary);
+			}
+		} catch (SQLException e) {
+			throw new EmployeePayrollException(e.getMessage(),
+					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
+		}
+		return genderToSalaryMap;
+	}
+	
+	public Map<String, Double> getAverageSalaryByGender() throws EmployeePayrollException {
+		String sql = "SELECT gender,AVG(salary) as salary FROM employee_payroll GROUP BY gender;";
+		return this.getSalaryByGender(sql);
+	}
+
+	public Map<String, Double> getSumOfSalaryByGender() throws EmployeePayrollException {
+		String sql = "SELECT gender,SUM(salary) as salary FROM employee_payroll GROUP BY gender;";
+		return this.getSalaryByGender(sql);
+	}
+
+	public Map<String, Double> getMinOfSalaryByGender() throws EmployeePayrollException {
+		String sql = "SELECT gender,MIN(salary) as salary FROM employee_payroll GROUP BY gender;";
+		return this.getSalaryByGender(sql);
+	}
+
+	public Map<String, Double> getMaxOfSalaryByGender() throws EmployeePayrollException {
+		String sql = "SELECT gender,MAX(salary) as salary FROM employee_payroll GROUP BY gender;";
+		return this.getSalaryByGender(sql);
 	}
 
 	private void prepareStatementForEmployeeData() throws EmployeePayrollException {

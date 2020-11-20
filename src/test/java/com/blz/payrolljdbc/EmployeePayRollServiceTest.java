@@ -2,6 +2,7 @@ package com.blz.payrolljdbc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -38,6 +39,43 @@ public class EmployeePayRollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayRollData> employeePayrollData = employeePayrollService
 				.readEmployeePayrollForDateRange(IOService.DB_IO, startDate, endDate);
-		Assert.assertEquals(2, employeePayrollData.size());
+		Assert.assertEquals(3, employeePayrollData.size());
 	}
+
+	@Test
+	public void givenPayrollData_WhenAverageSalaryRetrievedByGender_ShouldReturnProperValue()
+			throws EmployeePayrollException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Map<String, Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(IOService.DB_IO);
+		Assert.assertTrue(
+				averageSalaryByGender.get("M").equals(200000.00) && averageSalaryByGender.get("F").equals(300000.00));
+	}
+	
+	@Test
+	public void givenPayrollData_WhenSumSalaryRetrievedByGender_ShouldReturnProperValue()
+			throws EmployeePayrollException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Map<String, Double> sumOfSalaryByGender = employeePayrollService.readSumOfSalaryByGender(IOService.DB_IO);
+		Assert.assertTrue(
+				sumOfSalaryByGender.get("M").equals(400000.00) && sumOfSalaryByGender.get("F").equals(300000.00));
+	}
+	
+	@Test
+	public void givenPayrollData_FindMinSalaryRetrievedByGender_ShouldReturnProperValue()
+			throws EmployeePayrollException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Map<String, Double> minOfSalaryByGender = employeePayrollService.readMinOfSalaryByGender(IOService.DB_IO);
+		Assert.assertTrue(
+				minOfSalaryByGender.get("M").equals(100000.00) && minOfSalaryByGender.get("F").equals(300000.00));
+	}
+
+	@Test
+	public void givenPayrollData_FindMaxSalaryRetrievedByGender_ShouldReturnProperValue()
+			throws EmployeePayrollException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Map<String, Double> maxOfSalaryByGender = employeePayrollService.readMaxOfSalaryByGender(IOService.DB_IO);
+		Assert.assertTrue(
+				maxOfSalaryByGender.get("M").equals(300000.00) && maxOfSalaryByGender.get("F").equals(300000.00));
+	}
+
 }

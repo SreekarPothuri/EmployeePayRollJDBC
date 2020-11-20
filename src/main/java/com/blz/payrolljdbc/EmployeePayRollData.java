@@ -3,10 +3,10 @@ package com.blz.payrolljdbc;
 import java.time.LocalDate;
 
 public class EmployeePayRollData {
-	private int id;
-	private String name;
-	private double salary;
-	private LocalDate startDate;
+	public int id;
+	public String name;
+	public double salary;
+	public LocalDate startDate;
 
 	public EmployeePayRollData(int id, String name, double salary) {
 		this.id = id;
@@ -20,17 +20,33 @@ public class EmployeePayRollData {
 	}
 
 	@Override
-	public String toString() {
-		return "Id: " + id + " Name: " + name + " salary: " + salary;
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EmployeePayRollData other = (EmployeePayRollData) obj;
+		if (id != other.id)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (Double.doubleToLongBits(salary) != Double.doubleToLongBits(other.salary))
+			return false;
+		if (startDate == null) {
+			if (other.startDate != null)
+				return false;
+		} else if (!startDate.equals(other.startDate))
+			return false;
+		return true;
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		EmployeePayRollData that = (EmployeePayRollData) o;
-		return id == that.id && Double.compare(that.salary, salary) == 0 && name.equals(that.name);
+	public String toString() {
+		return "Id: " + id + " Name: " + name + " salary: " + salary + "startDate: " + startDate;
 	}
 }

@@ -76,7 +76,7 @@ public class EmployeePayRollService {
 
 	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
 			throws SQLException {
-		employeePayrollList.add(employeePayrollDBService.addEmployeePayroll(name, gender, salary, startDate));
+		employeePayrollList.add(employeePayrollDBService.addEmployeePayrollUC8(name, gender, salary, startDate));
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {

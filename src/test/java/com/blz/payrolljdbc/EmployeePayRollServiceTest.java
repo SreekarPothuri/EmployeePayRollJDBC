@@ -23,7 +23,7 @@ public class EmployeePayRollServiceTest {
 	@Test
 	public void givenEmployeePayRollInDB_WhenRetrieved_ShouldMatchEmployeeCount() throws EmployeePayrollException {
 		List<EmployeePayRollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		Assert.assertEquals(3, employeePayrollData.size());
+		Assert.assertEquals(5, employeePayrollData.size());
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class EmployeePayRollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayRollData> employeePayrollData = employeePayrollService
 				.readEmployeePayrollForDateRange(IOService.DB_IO, startDate, endDate);
-		Assert.assertEquals(3, employeePayrollData.size());
+		Assert.assertEquals(5, employeePayrollData.size());
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		Map<String, Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(IOService.DB_IO);
 		Assert.assertTrue(
-				averageSalaryByGender.get("M").equals(200000.00) && averageSalaryByGender.get("F").equals(300000.00));
+				averageSalaryByGender.get("M").equals(300000.00) && averageSalaryByGender.get("F").equals(450000.00));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		Map<String, Double> sumOfSalaryByGender = employeePayrollService.readSumOfSalaryByGender(IOService.DB_IO);
 		Assert.assertTrue(
-				sumOfSalaryByGender.get("M").equals(400000.00) && sumOfSalaryByGender.get("F").equals(300000.00));
+				sumOfSalaryByGender.get("M").equals(900000.00) && sumOfSalaryByGender.get("F").equals(900000.00));
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		Map<String, Double> maxOfSalaryByGender = employeePayrollService.readMaxOfSalaryByGender(IOService.DB_IO);
 		Assert.assertTrue(
-				maxOfSalaryByGender.get("M").equals(300000.00) && maxOfSalaryByGender.get("F").equals(300000.00));
+				maxOfSalaryByGender.get("M").equals(500000.00) && maxOfSalaryByGender.get("F").equals(600000.00));
 	}
 
 	@Test
@@ -84,6 +84,14 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		employeePayrollService.addEmployeeToPayroll("Mark", "M", 500000.00, LocalDate.now());
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		Assert.assertTrue(result);
+	}
+	
+	@Test
+	public void givenNewEmployee_WhenAddedToEmployeePayrollAndPayrollDetails_ShouldSyncWithDB() throws EmployeePayrollException, SQLException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeWithPayrollDetails("Lisa", "F", 600000.00, LocalDate.now());
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Lisa");
 		Assert.assertTrue(result);
 	}
 }

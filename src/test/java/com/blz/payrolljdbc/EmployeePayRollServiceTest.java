@@ -1,5 +1,6 @@
 package com.blz.payrolljdbc;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class EmployeePayRollServiceTest {
 		Assert.assertTrue(
 				averageSalaryByGender.get("M").equals(200000.00) && averageSalaryByGender.get("F").equals(300000.00));
 	}
-	
+
 	@Test
 	public void givenPayrollData_WhenSumSalaryRetrievedByGender_ShouldReturnProperValue()
 			throws EmployeePayrollException {
@@ -59,7 +60,7 @@ public class EmployeePayRollServiceTest {
 		Assert.assertTrue(
 				sumOfSalaryByGender.get("M").equals(400000.00) && sumOfSalaryByGender.get("F").equals(300000.00));
 	}
-	
+
 	@Test
 	public void givenPayrollData_FindMinSalaryRetrievedByGender_ShouldReturnProperValue()
 			throws EmployeePayrollException {
@@ -78,4 +79,11 @@ public class EmployeePayRollServiceTest {
 				maxOfSalaryByGender.get("M").equals(300000.00) && maxOfSalaryByGender.get("F").equals(300000.00));
 	}
 
+	@Test
+	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException, SQLException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Mark", "M", 500000.00, LocalDate.now());
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		Assert.assertTrue(result);
+	}
 }

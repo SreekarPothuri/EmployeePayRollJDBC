@@ -1,5 +1,6 @@
 package com.blz.payrolljdbc;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class EmployeePayRollService {
 		return null;
 	}
 
-	public Map<String, Double> readMaxOfSalaryByGender(IOService ioService) throws EmployeePayrollException{
+	public Map<String, Double> readMaxOfSalaryByGender(IOService ioService) throws EmployeePayrollException {
 		if (ioService.equals(IOService.DB_IO))
 			return employeePayrollDBService.getMaxOfSalaryByGender();
 		return null;
@@ -71,6 +72,11 @@ public class EmployeePayRollService {
 	private EmployeePayRollData getEmployeePayrollData(String name) {
 		return this.employeePayrollList.stream()
 				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name)).findFirst().orElse(null);
+	}
+
+	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
+			throws SQLException {
+		employeePayrollList.add(employeePayrollDBService.addEmployeePayroll(name, gender, salary, startDate));
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {

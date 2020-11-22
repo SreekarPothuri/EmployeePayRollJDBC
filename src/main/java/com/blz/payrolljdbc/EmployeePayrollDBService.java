@@ -194,13 +194,14 @@ public class EmployeePayrollDBService {
 		return employeePayrollData;
 	}
 
-	public EmployeePayRollData addEmployeePayrollUC8(String name, String gender, double salary, LocalDate startDate)
+	public EmployeePayRollData addEmployeePayrollInBothTables(String name, String gender, double salary, LocalDate startDate)
 			throws SQLException {
 		int employeeId = -1;
 		Connection connection = null;
 		EmployeePayRollData employeePayrollData = null;
 		try {
 			connection = this.getConnection();
+			connection.setAutoCommit(false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -216,6 +217,7 @@ public class EmployeePayrollDBService {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			connection.rollback();
 		}
 
 		try (Statement statement = connection.createStatement()) {
@@ -232,6 +234,13 @@ public class EmployeePayrollDBService {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			connection.rollback();
+		}
+		try {
+			connection.commit();
+		}
+		finally {
+			if(connection != null) connection.close();
 		}
 		return employeePayrollData;
 	}

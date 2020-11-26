@@ -86,9 +86,10 @@ public class EmployeePayRollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		Assert.assertTrue(result);
 	}
-	
+
 	@Test
-	public void givenNewEmployee_WhenAddedToEmployeePayrollAndPayrollDetails_ShouldSyncWithDB() throws EmployeePayrollException, SQLException {
+	public void givenNewEmployee_WhenAddedToEmployeePayrollAndPayrollDetails_ShouldSyncWithDB()
+			throws EmployeePayrollException, SQLException {
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		employeePayrollService.addEmployeeWithPayrollDetails("Lisa", "F", 600000.00, LocalDate.now());
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Lisa");

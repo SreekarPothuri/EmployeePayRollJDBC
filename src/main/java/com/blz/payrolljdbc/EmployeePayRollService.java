@@ -78,12 +78,13 @@ public class EmployeePayRollService {
 			throws SQLException {
 		employeePayrollList.add(employeePayrollDBService.addEmployeePayroll(name, gender, salary, startDate));
 	}
-	
+
 	public void addEmployeeWithPayrollDetails(String name, String gender, double salary, LocalDate startDate)
 			throws SQLException {
-		employeePayrollList.add(employeePayrollDBService.addEmployeePayrollInBothTables(name, gender, salary, startDate));
+		employeePayrollList
+				.add(employeePayrollDBService.addEmployeePayrollInBothTables(name, gender, salary, startDate));
 	}
-	
+
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {
 		List<EmployeePayRollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));

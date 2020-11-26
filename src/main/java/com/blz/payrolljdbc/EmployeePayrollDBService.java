@@ -194,8 +194,8 @@ public class EmployeePayrollDBService {
 		return employeePayrollData;
 	}
 
-	public EmployeePayRollData addEmployeePayrollInBothTables(String name, String gender, double salary, LocalDate startDate)
-			throws SQLException {
+	public EmployeePayRollData addEmployeePayrollInBothTables(String name, String gender, double salary,
+			LocalDate startDate) throws SQLException {
 		int employeeId = -1;
 		Connection connection = null;
 		EmployeePayRollData employeePayrollData = null;
@@ -238,9 +238,9 @@ public class EmployeePayrollDBService {
 		}
 		try {
 			connection.commit();
-		}
-		finally {
-			if(connection != null) connection.close();
+		} finally {
+			if (connection != null)
+				connection.close();
 		}
 		return employeePayrollData;
 	}

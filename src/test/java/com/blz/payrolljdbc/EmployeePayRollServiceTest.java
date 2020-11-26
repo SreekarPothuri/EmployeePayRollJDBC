@@ -116,7 +116,7 @@ public class EmployeePayRollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill");
 		Assert.assertTrue(result);
 	}
-	
+
 	@Test
 	public void given6Employees_WhenAddedDataToDB_ShouldMatchEmployeesEnteries()
 			throws EmployeePayrollException, SQLException {
@@ -129,9 +129,14 @@ public class EmployeePayRollServiceTest {
 
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		Instant start = Instant.now();
-		employeePayrollService.addEmployeePayrollData(Arrays.asList(arrayOfEmps));
+		employeePayrollService.addEmployeePayrollData_MultiThread(Arrays.asList(arrayOfEmps));
 		Instant end = Instant.now();
 		System.out.println("Duration without thread: " + Duration.between(start, end));
-		Assert.assertEquals(5, employeePayrollService.countEnteries(IOService.DB_IO));
+		Instant threadStart = Instant.now();
+		employeePayrollService.addEmployeeToPayRollWIthThreads(Arrays.asList(arrayOfEmps));
+		Instant threadEnd = Instant.now();
+		System.out.println("Duration With Thread : " + Duration.between(threadStart, threadEnd));
+		employeePayrollService.printData(IOService.DB_IO);
+		Assert.assertEquals(49, employeePayrollService.countEnteries(IOService.DB_IO));
 	}
 }

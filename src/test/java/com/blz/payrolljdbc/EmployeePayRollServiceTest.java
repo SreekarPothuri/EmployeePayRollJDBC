@@ -104,4 +104,13 @@ public class EmployeePayRollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Vamsi");
 		Assert.assertTrue(result);
 	}
+
+	@Test
+	public void givenEmployeePayroll_WhenDeleteRecord_ShouldeSyncWithDB()
+			throws EmployeePayrollException, SQLException {
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.deleteEmployeeToPayroll("Bill");
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill");
+		Assert.assertTrue(result);
+	}
 }

@@ -139,4 +139,16 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.printData(IOService.DB_IO);
 		Assert.assertEquals(49, employeePayrollService.countEnteries(IOService.DB_IO));
 	}
+
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdated_MultipleThreading() throws EmployeePayrollException {
+		List<EmployeePayRollData> employeePayRollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Instant threadStart = Instant.now();
+		employeePayrollService.updateEmployeeSalaryWithThreads("Charlie", 4000000.00);
+		Instant threadEnd = Instant.now();
+		System.out.println("Duration While Updated Query With Thread: " + Duration.between(threadStart, threadEnd));
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Charlie");
+		Assert.assertTrue(result);
+	}
 }

@@ -156,4 +156,21 @@ public class EmployeePayRollService {
 		else
 			System.out.println(employeePayrollList);
 	}
+
+	public void updateEmployeeSalaryWithThreads(String name, double salary) {
+		Map<Integer, Boolean> employeeAditionStatus = new HashMap<Integer, Boolean>();
+		Runnable task = () -> {
+			employeeAditionStatus.put(name.hashCode(), false);
+			System.out.println("Updated Thread Name:" + Thread.currentThread().getName());
+			try {
+				employeePayrollDBService.updateEmployeeData(name, salary);
+			} catch (EmployeePayrollException e) {
+				e.printStackTrace();
+			}
+			employeeAditionStatus.put(name.hashCode(), true);
+			System.out.println("Updated Thread Name: " + Thread.currentThread().getName());
+			Thread thread = new Thread();
+			thread.start();
+		};
+	}
 }

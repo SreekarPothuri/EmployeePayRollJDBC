@@ -91,6 +91,10 @@ public class EmployeePayRollService {
 		employeePayrollList.add(employeePayrollDBService.addEmployeePayrollInAllTables(name, gender, salary, startDate,
 				department, company));
 	}
+	
+	public void deleteEmployeeToPayroll(String name) throws EmployeePayrollException {
+		this.employeePayrollList = this.employeePayrollDBService.deleteEmployeeFromDatabase(name);
+	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {
 		List<EmployeePayRollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);

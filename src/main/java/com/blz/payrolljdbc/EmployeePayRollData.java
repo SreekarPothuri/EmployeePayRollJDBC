@@ -7,8 +7,8 @@ public class EmployeePayRollData {
 	public String name;
 	public double salary;
 	public LocalDate startDate;
-	public int department_id;
-	public int company_id;
+	public String department;
+	public String company;
 
 	public EmployeePayRollData(int id, String name, double salary) {
 		this.id = id;
@@ -19,6 +19,13 @@ public class EmployeePayRollData {
 	public EmployeePayRollData(int id, String name, double salary, LocalDate startDate) {
 		this(id, name, salary);
 		this.startDate = startDate;
+	}
+
+	public EmployeePayRollData(int id, String name, double salary, LocalDate startDate, String department,
+			String company) {
+		this(id, name, salary, startDate);
+		this.department = department;
+		this.company = company;
 	}
 
 	@Override
@@ -49,6 +56,7 @@ public class EmployeePayRollData {
 
 	@Override
 	public String toString() {
-		return "Id: " + id + " Name: " + name + " salary: " + salary + "startDate: " + startDate;
+		return "Id: " + id + " Name: " + name + " salary: " + salary + "startDate: " + startDate + "department: "
+				+ department + "company: " + company;
 	}
 }

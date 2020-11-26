@@ -8,7 +8,7 @@ import java.util.Map;
 public class EmployeePayRollService {
 
 	public enum IOService {
-		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
+		DB_IO
 	};
 
 	private List<EmployeePayRollData> employeePayrollList;
@@ -33,7 +33,7 @@ public class EmployeePayRollService {
 			LocalDate endDate) throws EmployeePayrollException {
 		if (ioService.equals(IOService.DB_IO))
 			return employeePayrollDBService.getEmployeeForDateRange(startDate, endDate);
-		return null;
+		return employeePayrollList;
 	}
 
 	public Map<String, Double> readAverageSalaryByGender(IOService ioService) throws EmployeePayrollException {
@@ -71,7 +71,8 @@ public class EmployeePayRollService {
 
 	private EmployeePayRollData getEmployeePayrollData(String name) {
 		return this.employeePayrollList.stream()
-				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name)).findFirst().orElse(null);
+				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.endsWith(name)).findFirst()
+				.orElse(null);
 	}
 
 	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
@@ -83,6 +84,12 @@ public class EmployeePayRollService {
 			throws SQLException {
 		employeePayrollList
 				.add(employeePayrollDBService.addEmployeePayrollInBothTables(name, gender, salary, startDate));
+	}
+
+	public void addEmployee(String name, String gender, double salary, LocalDate startDate, String department,
+			String company) throws SQLException, EmployeePayrollException {
+		employeePayrollList.add(employeePayrollDBService.addEmployeePayrollInAllTables(name, gender, salary, startDate,
+				department, company));
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {

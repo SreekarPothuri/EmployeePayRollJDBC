@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +145,7 @@ public class EmployeePayrollDBService {
 	}
 
 	public int updateEmployeeData(String name, double salary) throws EmployeePayrollException {
-		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
+		return this.updateEmployeeDataUsingStatement(name, salary);
 	}
 
 	private int updateEmployeeDataUsingStatement(String name, double salary) {
@@ -241,6 +242,93 @@ public class EmployeePayrollDBService {
 		} finally {
 			if (connection != null)
 				connection.close();
+		}
+		return employeePayrollData;
+	}
+
+	public EmployeePayRollData addEmployeePayrollInAllTables(String name, String gender, double salary, LocalDate start,
+			String department, String company) throws EmployeePayrollException {
+		int employeeID = -1;
+		Connection connection = null;
+		EmployeePayRollData employeePayrollData = null;
+		try {
+			connection = this.getConnection();
+			connection.setAutoCommit(false);
+		} catch (SQLException sqlException) {
+			throw new EmployeePayrollException(sqlException.getMessage(),
+					EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
+		}
+		try (Statement statement = connection.createStatement()) {
+			String query = String.format(
+					"INSERT INTO employee_payroll (name,gender,salary,start,department,company)"
+							+ " VALUES ('%s','%s','%s','%s','%s','%s')",
+					name, salary, start, gender, department, company);
+			int rowAffected = statement.executeUpdate(query, statement.RETURN_GENERATED_KEYS);
+			if (rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+					employeeID = resultSet.getInt(1);
+			}
+			employeePayrollData = new EmployeePayRollData(employeeID, name, salary, start, department, company);
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new EmployeePayrollException(e1.getMessage(),
+						EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
+			}
+		}
+		try (Statement statement = connection.createStatement()) {
+			List<String> departmentList = new ArrayList<>(Arrays.asList("sales", "marketing"));
+			String query = String.format("insert into department(emp_id,dept_name) values ('%s', '%s')", employeeID,
+					department);
+			int rowAffected = statement.executeUpdate(query, statement.RETURN_GENERATED_KEYS);
+			if (rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+					employeeID = resultSet.getInt(1);
+			}
+			employeePayrollData = new EmployeePayRollData(employeeID, name, salary, start, department, company);
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new EmployeePayrollException(e1.getMessage(),
+						EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
+			}
+		}
+		try (Statement statement = connection.createStatement()) {
+			double deductions = salary * 0.2;
+			double taxablePay = salary - deductions;
+			double tax = taxablePay * 0.1;
+			double netPay = salary - tax;
+			String query = String.format(
+					"INSERT INTO payroll_details(employee_id,basic_pay,deductions,taxable_pay,tax,net_pay) VALUES (%s,%s,%s,%s,%s,%s)",
+					employeeID, salary, deductions, taxablePay, tax, netPay);
+			int rowAffected = statement.executeUpdate(query);
+			if (rowAffected == 1) {
+				employeePayrollData = new EmployeePayRollData(employeeID, name, salary, start, department, company);
+			}
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new EmployeePayrollException(e1.getMessage(),
+						EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION);
+			}
+		}
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			throw new EmployeePayrollException(e.getMessage(), EmployeePayrollException.ExceptionType.COMMIT_FAILED);
+		} finally {
+			if (connection != null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					throw new EmployeePayrollException(e.getMessage(),
+							EmployeePayrollException.ExceptionType.RESOURCES_NOT_CLOSED_EXCEPTION);
+				}
 		}
 		return employeePayrollData;
 	}

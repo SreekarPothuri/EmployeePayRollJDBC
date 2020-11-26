@@ -8,7 +8,7 @@ import java.util.Map;
 public class EmployeePayRollService {
 
 	public enum IOService {
-		DB_IO
+		DB_IO, FILE_IO
 	};
 
 	private List<EmployeePayRollData> employeePayrollList;
@@ -91,7 +91,7 @@ public class EmployeePayRollService {
 		employeePayrollList.add(employeePayrollDBService.addEmployeePayrollInAllTables(name, gender, salary, startDate,
 				department, company));
 	}
-	
+
 	public void deleteEmployeeToPayroll(String name) throws EmployeePayrollException {
 		this.employeePayrollList = this.employeePayrollDBService.deleteEmployeeFromDatabase(name);
 	}
@@ -99,5 +99,25 @@ public class EmployeePayRollService {
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {
 		List<EmployeePayRollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+	}
+
+	public void addEmployeePayrollData(List<EmployeePayRollData> employeePayrollList) {
+		employeePayrollList.forEach(employeePayrollData -> {
+			try {
+				employeePayrollDBService.addEmployeePayroll(employeePayrollData.name, employeePayrollData.gender,
+						employeePayrollData.salary, employeePayrollData.startDate);
+
+			} catch (SQLException e) {
+
+				e.printStackTrace();
+			}
+
+		});
+	}
+
+	public long countEnteries(IOService ioService) {
+		if (ioService.equals(IOService.FILE_IO))
+			return new EmployeePayRollService().countEnteries(ioService);
+		return employeePayrollList.size();
 	}
 }

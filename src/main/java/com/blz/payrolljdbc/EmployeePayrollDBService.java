@@ -188,7 +188,7 @@ public class EmployeePayrollDBService {
 				if (resultSet.next())
 					employeeId = resultSet.getInt(1);
 			}
-			employeePayrollData = new EmployeePayRollData(employeeId, name, salary, startDate);
+			employeePayrollData = new EmployeePayRollData(employeeId, name, gender, salary, startDate);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

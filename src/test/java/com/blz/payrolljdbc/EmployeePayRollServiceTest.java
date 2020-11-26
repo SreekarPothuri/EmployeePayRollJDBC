@@ -1,7 +1,10 @@
 package com.blz.payrolljdbc;
 
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +26,12 @@ public class EmployeePayRollServiceTest {
 	@Test
 	public void givenEmployeePayRollInDB_WhenRetrieved_ShouldMatchEmployeeCount() throws EmployeePayrollException {
 		List<EmployeePayRollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		Assert.assertEquals(3, employeePayrollData.size());
+		Assert.assertEquals(11, employeePayrollData.size());
 	}
 
 	@Test
 	public void givenNewSalaryForEmployee_WhenUpdated_ShouldMatch() throws EmployeePayrollException {
-		employeePayrollService.updateEmployeeSalary("Terisa", 300000.00);
+		employeePayrollService.updateEmployeeSalary("Terisa", 400000.00);
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 		Assert.assertTrue(result);
 	}
@@ -40,7 +43,7 @@ public class EmployeePayRollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayRollData> employeePayrollData = employeePayrollService
 				.readEmployeePayrollForDateRange(IOService.DB_IO, startDate, endDate);
-		Assert.assertEquals(3, employeePayrollData.size());
+		Assert.assertEquals(11, employeePayrollData.size());
 	}
 
 	@Test
@@ -112,5 +115,23 @@ public class EmployeePayRollServiceTest {
 		employeePayrollService.deleteEmployeeToPayroll("Bill");
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill");
 		Assert.assertTrue(result);
+	}
+	
+	@Test
+	public void given6Employees_WhenAddedDataToDB_ShouldMatchEmployeesEnteries()
+			throws EmployeePayrollException, SQLException {
+		EmployeePayRollData[] arrayOfEmps = { new EmployeePayRollData(0, "Abhi", "M", 1000000, LocalDate.now()),
+				new EmployeePayRollData(0, "Badree", "M", 2000000, LocalDate.now()),
+				new EmployeePayRollData(0, "Anjali", "F", 3000000, LocalDate.now()),
+				new EmployeePayRollData(0, "Sai", "M", 4000000, LocalDate.now()),
+				new EmployeePayRollData(0, "Prasanna", "F", 5000000, LocalDate.now()),
+				new EmployeePayRollData(0, "Banti", "M", 6000000, LocalDate.now()), };
+
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Instant start = Instant.now();
+		employeePayrollService.addEmployeePayrollData(Arrays.asList(arrayOfEmps));
+		Instant end = Instant.now();
+		System.out.println("Duration without thread: " + Duration.between(start, end));
+		Assert.assertEquals(5, employeePayrollService.countEnteries(IOService.DB_IO));
 	}
 }
